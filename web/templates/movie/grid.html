@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7 no-js" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8 no-js" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en" class="no-js">
+
+<head>
+	<title>{{ title }}</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="author" content="">
+	<link rel="profile" href="#">
+
+    <!--Google Font-->
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
+	<!-- Mobile specific meta -->
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<meta name="format-detection" content="telephone-no">
+
+	<!-- CSS files -->
+	<link rel="stylesheet" href="/assets/css/plugins.css">
+	<link rel="stylesheet" href="/assets/css/style.css">
+
+</head>
+<body>
+<!--preloading-->
+<div id="preloader">
+    <img class="logo" src="/assets/images/logo1.png" alt="" width="119" height="58">
+    <div id="status">
+        <span></span>
+        <span></span>
+    </div>
+</div>
+<!--end of preloading-->
+
+<div class="hero common-hero">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div>
+					<a href="/"><h1>FlickWatch</h1></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="page-single">
+	<div class="container">
+		<div class="row ipad-width">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="search-form">
+						<h4 class="sb-title">Search a title</h4>
+						<form class="form-style-1" action="{{ url_for('search') }}" method="get">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Title or keywords</label>
+									<input type="text" name="q" placeholder="Enter title or keywords">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" value="search">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				{% if result.main|length: %}
+				<div class="topbar-filter">
+					<p>Found <span>{{ result.main|length }}</span> title(s)</p>
+				</div>
+				{% endif %}
+				<div class="flex-wrap-movielist">
+					{% for movie in result.main.values(): %}
+					<div class="movie-item-style-2 movie-item-style-1">
+						<a href="{{ url_for('search_link', media_hash=movie.media_hash) }}">
+							<img src="{{ movie.image_url }}" style="max-height: 210px; max-width: fit-content" alt="">
+						</a>
+						<div class="mv-item-infor">
+							<h6><a href="{{ movie.image_url }}">{{ movie.title }}</a></h6>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				{% if result.secondary|length: %}
+				<div class="topbar-filter">
+					<p>Found other <span>{{ result.secondary|length }}</span> title(s)</p>
+				</div>
+				<div class="flex-wrap-movielist">
+					{% for movie in result.secondary.values(): %}
+					<div class="movie-item-style-2 movie-item-style-1">
+						<a href="{{ url_for('search_link', media_hash=movie.media_hash) }}">
+							<img src="{{ movie.image_url }}" style="max-height: 210px; max-width: fit-content" alt="">
+						</a>
+						<div class="mv-item-infor">
+							<h6><a href="{{ movie.image_url }}">{{ movie.title }}</a></h6>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- footer section-->
+<footer class="ht-footer">
+	<div class="container">
+		<div class="flex-parent-ft"></div>
+	</div>
+</footer>
+<!-- end of footer section-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/plugins.js"></script>
+<script src="/assets/js/plugins2.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+
+<!-- moviegrid07:38-->
+</html>
