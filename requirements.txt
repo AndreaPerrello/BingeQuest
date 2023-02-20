@@ -32,3 +32,4 @@ cloudscraper == 1.2.68
 beautifulsoup4 == 4.9.3
 aniso8601 == 9.0.1
 PyMovieDb == 0.0.7
+# youtube-search-python == 1.6.6
