@@ -21,7 +21,7 @@ def load_blueprints(core):
     @core.app.route('/search/')
     async def search():
         q = request.args.get('q')
-        result = await core.engine.search(q)
+        result = await core.engine.execute_search(q)
         kwargs = {}
         if q:
             kwargs['title_prefix'] = f'{q} - '

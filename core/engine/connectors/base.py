@@ -15,10 +15,10 @@ fernet = cryptography.fernet.Fernet(key)
 
 class MovieConnector:
 
-    def __init__(self, title: str, url: str, relative_url: str):
+    def __init__(self, title: str, url: str, image_relative_url: str):
         self.title = urllib.parse.unquote(title)
         self.url = url
-        self.relative_url = relative_url
+        self.relative_url = image_relative_url
 
     @property
     def image_url(self) -> str:

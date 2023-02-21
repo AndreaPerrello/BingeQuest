@@ -8,9 +8,9 @@ import requests
 from youtubesearchpython import VideosSearch
 from googlesearch import search as g_search
 
-from ..utils import multi_format_date
-from .imdb_movie import IMDBMovie
-from ..movie import MovieConnector
+from core.engine.utils import multi_format_date
+from core.engine.connectors.imdb_movie import IMDBMovie
+from core.engine.connectors.movie import MovieConnector
 
 
 class _YTResult(dict):

@@ -3,7 +3,7 @@ from typing import List, Optional
 import bs4
 import cloudscraper
 
-from ..movie import MovieConnector, SearchResult
+from ..base import MovieConnector, SearchResult
 
 scraper = cloudscraper.create_scraper()
 
@@ -58,8 +58,6 @@ class AltaDefinizione(MovieConnector):
 
     @classmethod
     def _do_search(cls, query: str, title_only: bool) -> List[MovieConnector]:
-        if not query:
-            return list()
         url = f"{cls.base_url}/index.php?do=search"
         form = {'do': 'search', 'subaction': 'search', 'story': query}
         if title_only:

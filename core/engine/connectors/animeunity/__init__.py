@@ -1,1 +1,1 @@
-from .client import AnimeUnity
+from .connector import AnimeUnity

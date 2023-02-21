@@ -4,10 +4,10 @@ import cloudscraper
 from bs4 import BeautifulSoup
 from pathlib import Path
 
-from . import json_parser
-from .classes import Anime
+from ..base import MovieConnector, SearchResult
 from .obj_manipulator import get_formatted_search_results
-from ...movie import MovieConnector, SearchResult
+from .classes import Anime
+from . import json_parser
 
 file_log = False
 base_path = Path('./doc/templates')
@@ -20,8 +20,6 @@ class AnimeUnity(MovieConnector):
 
     @classmethod
     def search(cls, query: str) -> Optional[SearchResult]:
-        if not query:
-            return
         results = cls._search(title=query, order="Popolarità")
         return SearchResult([cls(anime.main_title, anime.url, anime.thumbnail) for anime in results])
 
