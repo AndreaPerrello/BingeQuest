@@ -9,11 +9,8 @@ def replace_characters(json_string):
 
 
 def decode_json(json_str):
-    json_str = replace_characters(json_str)
-    obj_arr = json.loads(json_str)
-    return obj_arr
+    return json.loads(replace_characters(json_str))
 
 
 def encode_json(res_obj):
-    json_str = json.dumps(res_obj)
-    return json_str
+    return json.dumps(res_obj)

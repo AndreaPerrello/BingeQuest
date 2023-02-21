@@ -1,0 +1,29 @@
+{% extends "layout/main.html" %}
+{% block head %}
+<style>
+	.videoWrapper {
+	  position: relative;
+	  padding-bottom: calc(var(--aspect-ratio, .5625) * 100%);
+	  height: 0;
+	}
+	.videoWrapper #videoPlayer {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	  border: 1px solid #fff;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<div class="col-md-12 col-sm-12 col-xs-12">
+	<div class="videoWrapper" style="--aspect-ratio: 9 / 16;">
+		<video id="videoPlayer" poster="/assets/images/poster.png" controls>
+			<iframe src="{{ source_url }}" frameborder="0" marginwidth="0" marginheight="0"
+					scrolling="no" width="100%" height="440" allowfullscreen=""></iframe>
+			<p>This is fallback content</p>
+		</video>
+	</div>
+</div>
+{% endblock %}

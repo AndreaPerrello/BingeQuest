@@ -2,11 +2,13 @@ import abc
 import base64
 import json
 import urllib.parse
-from typing import Optional, List
+from typing import Optional, List, Any
 
 import cryptography.fernet
 
 from iotech.configurator import Config
+
+from ..utils import new_tab
 
 FERNET_KEY = Config(str, 'FERNET', 'key')
 key = FERNET_KEY.get().encode('utf-8')
@@ -31,20 +33,23 @@ class MovieConnector:
             encrypted_data = base64.urlsafe_b64decode(b64_hash)
             dumped_data = fernet.decrypt(encrypted_data).decode()
             data = json.loads(dumped_data)
-            return data['url'], data['type']
+            return data['content'], data['type']
         except:
             return None, None
 
     @property
     def media_hash(self) -> str:
-        dumped_data = json.dumps(dict(url=self.url, type=self.__class__.__name__))
+        dumped_data = json.dumps({'content': self.get_content(), **{'type': self.__class__.__name__}})
         encrypted_data = fernet.encrypt(dumped_data.encode())
         b64_hash = base64.urlsafe_b64encode(encrypted_data)
         return b64_hash.decode('ascii')
 
+    def get_content(self) -> dict:
+        return {'url': self.url}
+
     @classmethod
-    def get_link(cls, original_url: str) -> str:
-        return original_url
+    async def execute(cls, content: Any) -> Any:
+        return new_tab(content['url'])
 
     @classmethod
     @abc.abstractmethod
@@ -62,13 +67,17 @@ class SearchResult:
     def __init__(self, main: List[MovieConnector] = None, secondary: List[MovieConnector] = None):
         main = main and {x.title: x for x in main} or dict()
         secondary = secondary and {x.title: x for x in secondary} or dict()
-        secondary = {k: v for k, v in secondary.items() if k not in main}
+        self._reduce(main, secondary)
+
+    def _reduce(self, main: dict, secondary: dict):
         self.main = main
-        self.secondary = secondary
+        self.secondary = {k: v for k, v in secondary.items() if k not in main}
 
     def merge(self, x):
         """
         :type x: SearchResult
         """
-        self.main = {**self.main, **x.main}
-        self.secondary = {**self.secondary, **x.secondary}
+        main = {**self.main, **x.main}
+        secondary = {**self.secondary, **x.secondary}
+        self._reduce(main, secondary)
+

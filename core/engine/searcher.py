@@ -1,6 +1,8 @@
 import concurrent.futures
 from typing import Optional, Set
 
+import cloudscraper
+
 from .connectors.base import MovieConnector, SearchResult
 from . import connectors
 
@@ -11,6 +13,7 @@ class SearchEngine:
         connectors.AltaDefinizione,
         connectors.AnimeUnity,
         connectors.StagaTV,
+        connectors.DailyFlix,
         # connectors.YouTube,
     }
 
@@ -29,8 +32,12 @@ class SearchEngine:
         return result
 
     @classmethod
-    def get_link(cls, media_hash: str) -> Optional[str]:
-        original_url, media_type = MovieConnector.content_from_hash(media_hash)
+    async def execute_from_hash(cls, media_hash: str) -> Optional[str]:
+        content, media_type = MovieConnector.content_from_hash(media_hash)
         for c in cls._map:
             if c.__name__ == media_type:
-                return c.get_link(original_url)
+                return await c.execute(content)
+
+    @classmethod
+    async def proxy_post(cls, url: str, **kwargs):
+        return cloudscraper.create_scraper().post(url, **kwargs).json()

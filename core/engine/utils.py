@@ -1,4 +1,5 @@
 import datetime
+import webbrowser
 
 
 def multi_format_date(string: str):
@@ -11,3 +12,12 @@ def multi_format_date(string: str):
             return datetime.datetime.strptime(string, "%M:%S")
         except:
             pass
+
+
+def history_back() -> str:
+    return "<script>history.back()</script>"
+
+
+def new_tab(url: str) -> str:
+    webbrowser.open_new_tab(url)
+    return history_back()

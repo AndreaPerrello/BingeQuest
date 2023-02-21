@@ -5,7 +5,6 @@ from . import views
 from .engine import SearchEngine
 
 import logging
-
 LOGGER = logging.getLogger(__name__)
 
 

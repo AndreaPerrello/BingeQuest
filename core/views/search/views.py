@@ -29,7 +29,17 @@ def load_blueprints(core):
 
     @core.app.route('/search/<media_hash>/')
     async def search_link(media_hash: str):
-        link = core.engine.get_link(media_hash)
-        if link:
-            return redirect(link)
-        return redirect(url_for('movie_list'))
+        return_value = await core.engine.execute_from_hash(media_hash)
+        if return_value is not None:
+            return return_value
+        return redirect(url_for('search', **request.view_args))
+
+    @core.app.route('/proxy_post', methods=['POST'])
+    async def proxy_post():
+        try:
+            params = await request.form
+            url = params['url']
+            data = {k.replace('data[', '').replace(']', ''): v for k, v in params.items() if k.startswith('data')}
+            return await core.engine.proxy_post(url, data=data)
+        except Exception as e:
+            return str(e), 500
