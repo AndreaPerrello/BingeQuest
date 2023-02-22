@@ -1514,4 +1514,6 @@ TSWLatexianTemp*
 
 venv2/
 
+*.db-shm
+*.db-wal
 
