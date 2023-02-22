@@ -1,0 +1,49 @@
+{% extends "layout/main.html" %}
+{% block head %}
+<style>
+	#videoWrapper {
+	  position: relative;
+	  padding-bottom: calc(var(--aspect-ratio, .5625) * 100%);
+	  height: 0;
+	}
+	#videoWrapper #videoPlayer {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<div class="col-md-12 col-sm-12 col-xs-12">
+	<div id="videoWrapper" style="--aspect-ratio: 9 / 16;">
+		<video id="videoPlayer" poster="#" controls>
+			<source src="" type='{{ mime_type }};'>
+			<p>This is fallback content</p>
+		</video>
+	</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+	$(document).ready(function() {
+		var videoWrapper = $("#videoWrapper");
+		var videoPlayer = $("#videoPlayer");
+		var loader = "/assets/images/loader.gif";
+		videoPlayer.attr("poster", loader);
+		$.ajax({
+			url: '/proxy_post',
+			data: {
+				url: '{{ source_url }}',
+				data: JSON.parse('{{ source_data | tojson | safe }}')
+			},
+			type: 'post',
+			success: function(result) {
+				videoPlayer.attr("src", '{{ base_url }}' + result['file']);
+				videoPlayer.attr("poster", '{{ source_poster }}');
+			}
+		});
+	});
+</script>
+{% endblock %}

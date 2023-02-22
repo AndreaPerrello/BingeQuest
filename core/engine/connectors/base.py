@@ -1,48 +1,65 @@
 import abc
-import base64
-import json
 import urllib.parse
 from typing import Optional, List, Any
 
-import cryptography.fernet
-
-from iotech.configurator import Config
-
+from .. import security
 from ..utils import new_tab
 
-FERNET_KEY = Config(str, 'FERNET', 'key')
-key = FERNET_KEY.get().encode('utf-8')
-fernet = cryptography.fernet.Fernet(key)
+_lang_map = {'en': 'ENG', 'it': 'ITA'}
 
 
-class MovieConnector:
+class SearchConnector:
 
-    def __init__(self, title: str, url: str, image_relative_url: str):
-        self.title = urllib.parse.unquote(title)
-        self.url = url
-        self.relative_url = image_relative_url
+    children: List = []
+
+    def __init__(self, original_title: str, url: str = None, image_url: str = None, lang: str = None):
+        self._original_title = urllib.parse.unquote(original_title)
+        self._url = url
+        self._image_url = image_url
+        self._lang = lang
+
+    def __lt__(self, other):
+        return self.title < other.title
+
+    def __eq__(self, other):
+        return self.title == other.title
 
     @property
-    def image_url(self) -> str:
-        return f"{self.relative_url}"
+    def title(self) -> str:
+        language = _lang_map.get(self._lang, _lang_map['en'])
+        return f"{self._original_title} ({language})"
+
+    @property
+    def query_title(self) -> str:
+        return self._original_title.lower()
+
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @classmethod
+    def uid(cls) -> str:
+        return cls.__name__.lower()
+
+    @property
+    def link(self) -> str:
+        return security.url_for('search', m=self.media_hash)
+
+    @property
+    def src(self) -> str:
+        return self._image_url
 
     @classmethod
     def content_from_hash(cls, media_hash: str) -> (Optional[str], Optional[str]):
         try:
-            b64_hash = media_hash.encode('ascii')
-            encrypted_data = base64.urlsafe_b64decode(b64_hash)
-            dumped_data = fernet.decrypt(encrypted_data).decode()
-            data = json.loads(dumped_data)
-            return data['content'], data['type']
+            data = security.decrypt_dict(media_hash)
+            return data['content'], data['uid']
         except:
             return None, None
 
     @property
     def media_hash(self) -> str:
-        dumped_data = json.dumps({'content': self.get_content(), **{'type': self.__class__.__name__}})
-        encrypted_data = fernet.encrypt(dumped_data.encode())
-        b64_hash = base64.urlsafe_b64encode(encrypted_data)
-        return b64_hash.decode('ascii')
+        return security.encrypt_dict(content=self.get_content(), uid=self.uid())
 
     def get_content(self) -> dict:
         return {'url': self.url}
@@ -64,7 +81,7 @@ class MovieConnector:
 
 class SearchResult:
 
-    def __init__(self, main: List[MovieConnector] = None, secondary: List[MovieConnector] = None):
+    def __init__(self, main: List[SearchConnector] = None, secondary: List[SearchConnector] = None):
         main = main and {x.title: x for x in main} or dict()
         secondary = secondary and {x.title: x for x in secondary} or dict()
         self._reduce(main, secondary)
@@ -80,4 +97,7 @@ class SearchResult:
         main = {**self.main, **x.main}
         secondary = {**self.secondary, **x.secondary}
         self._reduce(main, secondary)
+
+    def sorted(self):
+        return self.__class__(sorted(self.main.values()), sorted(self.secondary.values()))
 

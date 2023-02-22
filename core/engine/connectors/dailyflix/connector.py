@@ -1,16 +1,21 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import urllib.parse
 from typing import List, Optional
 
 import bs4
 import cloudscraper
 
+from ..utils import check_in
 from ...utils import new_tab
-from ..base import MovieConnector, SearchResult
+from ..base import SearchConnector, SearchResult
+
+import logging
+LOGGER = logging.getLogger(__name__)
 
 scraper = cloudscraper.create_scraper()
 
 
-class DailyFlix(MovieConnector):
+class DailyFlix(SearchConnector):
 
     _base_url_ = "https://main.dailyflix.stream"
 
@@ -19,31 +24,45 @@ class DailyFlix(MovieConnector):
         return new_tab(content['url'])
 
     @classmethod
+    def _scrape_td(cls, td):
+        link = td.find('a')
+        if not link:
+            return
+        title = link.text
+        url = link['href']
+        soup = bs4.BeautifulSoup(scraper.get(url).text)
+        file_frame = soup.find('iframe')
+        if not file_frame:
+            return
+        file_url = file_frame['src'].split('<')[0].strip()
+        poster = soup.find('div', {'class': 'poster_parent'})
+        if not poster:
+            return
+        poster_style = poster['style']
+        image_url = poster_style.strip().split(',')[1].strip().replace('url(', '').replace(')', '')
+        return cls(title, url=file_url, image_url=image_url)
+
+    @classmethod
     def search(cls, query: str) -> Optional[SearchResult]:
-        movies_list: List[DailyFlix] = list()
-        # Scrape movie list
+        main_items: List[DailyFlix] = list()
+        secondary_items: List[DailyFlix] = list()
+        # Scrape items list
         url = f"{cls._base_url_}/?s={urllib.parse.quote(query)}"
         soup = bs4.BeautifulSoup(scraper.get(url).text)
         table = soup.find('table', {'class': 'table'})
         if not table:
             return
-        for td in table.find_all('td'):
-            link = td.find('a')
-            if not link:
-                continue
-            movie_title = link.text
-            movie_url = link['href']
-            movie_soup = bs4.BeautifulSoup(scraper.get(movie_url).text)
-            movie_file_frame = movie_soup.find('iframe')
-            if not movie_file_frame:
-                continue
-            movie_file_url = movie_file_frame['src']
-            poster = movie_soup.find('div', {'class': 'poster_parent'})
-            if not poster:
-                continue
-            poster_style = poster['style']
-            movie_image_url = poster_style.strip().split(',')[1].strip().replace('url(', '').replace(')', '')
-            movies_list.append(cls(movie_title, movie_file_url, movie_image_url))
+        # Multiprocess table items
+        tds = table.find_all('td')
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(cls._scrape_td, td) for td in tds]
+            for future in as_completed(futures):
+                item = future.result()
+                if item:
+                    if check_in(query, item.title):
+                        main_items.append(item)
+                    else:
+                        secondary_items.append(item)
         # Return results
-        return SearchResult(movies_list)
+        return SearchResult(main_items, secondary_items)
 

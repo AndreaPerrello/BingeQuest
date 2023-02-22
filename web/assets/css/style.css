@@ -5653,32 +5653,23 @@ ul {
   content: '';
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: #020d18;
 }
 /*movie single hero*/
 .mv-single-hero {
-  background: url('../images/uploads/hero-bg.jpg') no-repeat;
+  background-color: #020d18;
   height: 598px;
-}
-/*series single hero*/
-.sr-single-hero {
-  background: url('../images/uploads/sr-single.jpg') no-repeat;
-  height: 598px;
-}
-.hero3 {
-  background: url('../images/uploads/celeb-hero-single.jpg') no-repeat;
-  height: 538px;
 }
 .common-hero {
   height: 100px;
-  background: url('../images/uploads/user-hero-bg.jpg') no-repeat;
+  background-color: #020d18;
 }
 .common-hero:before {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: #020d18;
 }
 .user-hero {
   height: 385px;
-  background: url('../images/uploads/user-hero-bg.jpg') no-repeat;
+  background-color: #020d18;
 }
 .user-hero .hero-ct {
   padding-top: 225px;
@@ -5710,7 +5701,7 @@ ul {
   background-color: rgba(0, 0, 0, 0.4);
 }
 .landing-hero {
-  background-image: url('../images/uploads/user-hero-bg.jpg');
+  background-color: #020d18;
   box-shadow: inset 0 0 1000px rgba(0, 0, 0, 0.5);
   text-align: center;
   padding: 110px 0;

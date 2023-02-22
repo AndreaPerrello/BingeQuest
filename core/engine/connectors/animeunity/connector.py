@@ -3,13 +3,13 @@ from typing import List, Optional
 import cloudscraper
 from bs4 import BeautifulSoup
 
-from ..base import MovieConnector, SearchResult
+from ..base import SearchConnector, SearchResult
 from .obj_manipulator import format_search_results
 from .json_parser import decode_json
 from .classes import Anime
 
 
-class AnimeUnity(MovieConnector):
+class AnimeUnity(SearchConnector):
 
     base_url = "https://www.animeunity.tv"
 

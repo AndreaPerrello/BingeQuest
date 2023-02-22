@@ -1,15 +1,16 @@
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import bs4
 import cloudscraper
 
+from ..utils import check_in
 from ...utils import new_tab
-from ..base import MovieConnector, SearchResult
+from ..base import SearchConnector, SearchResult
 
 scraper = cloudscraper.create_scraper()
 
 
-class AltaDefinizione(MovieConnector):
+class AltaDefinizione(SearchConnector):
 
     _base_url_ = 'https://altadefinizione.navy'
 
@@ -37,31 +38,37 @@ class AltaDefinizione(MovieConnector):
         return None, None
 
     @classmethod
-    def _do_search(cls, query: str, title_only: bool) -> List[MovieConnector]:
+    def _do_search(cls, query: str, title_only: bool) -> SearchResult:
+        main_list = []
+        secondary_list = []
         url = f"{cls._base_url_}/index.php?do=search"
         form = {'do': 'search', 'subaction': 'search', 'story': query}
         if title_only:
             form['titleonly'] = 3
         text = scraper.post(url, data=form).text
         soup = bs4.BeautifulSoup(text)
-        movie_list = []
         for wrapper in soup.find_all('div', 'wrapperImage'):
             a = wrapper.find('a')
-            image = a.find('img').attrs['src']
+            image_url = a.find('img').attrs['src']
             url = a.attrs['href']
             title = wrapper.find('div', {'class': 'info'}).find('h2', {'class': 'titleFilm'}).find('a').text
-            movie_list.append(cls(title, url, image))
-        return movie_list
+            item = cls(title, url, image_url=image_url, lang='it')
+            if check_in(query, title):
+                main_list.append(item)
+            else:
+                secondary_list.append(item)
+        return SearchResult(main_list, secondary_list)
 
     @classmethod
     def search(cls, query: str) -> Optional[SearchResult]:
-        main_results = cls._do_search(query, title_only=True)
-        secondary_results = cls._do_search(query, title_only=False)
-        return SearchResult(main_results, secondary_results)
+        result = cls._do_search(query, title_only=True)
+        no_title_result = cls._do_search(query, title_only=False)
+        result.merge(no_title_result)
+        return result
 
     @property
-    def image_url(self):
-        return f"{self._base_url_}{self.relative_url}"
+    def src(self):
+        return f"{self._base_url_}{self._image_url}"
 
     @classmethod
     async def execute(cls, content: dict):

@@ -13,7 +13,7 @@ from ..startup import is_production
 from ...utils import networking
 from ..interface import ServiceInterface
 from .. import configs as service_configs
-from .app import PintApp, QuartApp
+from .app import QuartApp
 from . import spec, ext, configs
 
 import logging
@@ -28,7 +28,7 @@ class WebService(ServiceInterface):
         self._views_module = views_module
         app = app_cls(service_configs.SERVICE_NAME.get(), **app_kwargs)
         app.config.from_object(configs.WebServiceAppConfig())
-        self._app: Union[QuartApp, PintApp] = app
+        self._app: QuartApp = app
         self._pluggy = pluggy.PluginManager('default')
         self._server: uvicorn.Server = None
         if not hasattr(self, '_event_loop'):
