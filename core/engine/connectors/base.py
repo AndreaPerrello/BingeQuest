@@ -24,6 +24,7 @@ class MovieConnector:
 
     @property
     def image_url(self) -> str:
+
         return f"{self.relative_url}"
 
     @classmethod
