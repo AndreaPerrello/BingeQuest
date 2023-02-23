@@ -1,11 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional, Set
 
-import cloudscraper
-
 from .connectors.base import SearchConnector, SearchResult
 from .cache import Cache
-from . import connectors
+from . import connectors, scraping
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -17,7 +15,8 @@ class SearchEngine:
         connectors.AltaDefinizione,
         connectors.AnimeUnity,
         connectors.StagaTV,
-        connectors.DailyFlix,
+        connectors.MainDailyFlix,
+        connectors.StreamingCommunity,
         # connectors.YouTube,
     }
 
@@ -37,7 +36,10 @@ class SearchEngine:
         return _recursive(list(cls._base_map))
 
     def _internal_search(self, c: SearchConnector, *args, **kwargs):
-        return c.search(*args, **kwargs)
+        try:
+            return c.search(*args, **kwargs)
+        except Exception as e:
+            LOGGER.warning(f"{c.uid()}: {e}")
 
     async def do_search(self, query: str, uid: str = None) -> SearchResult:
         result: SearchResult = SearchResult()
@@ -63,6 +65,6 @@ class SearchEngine:
         cache_name = 'proxy_post'
         cache_value = Cache().get(cache_name, url=url, **kwargs)
         if not cache_value:
-            cache_value = cloudscraper.create_scraper().post(url, **kwargs).json()
+            cache_value = scraping.post(url, **kwargs).json()
             Cache().set(cache_name, cache_value, url=url, **kwargs)
         return cache_value

@@ -1,13 +1,9 @@
 from typing import Optional, Tuple, Union
 
 import bs4
-import cloudscraper
 
-from ..utils import check_in
-from ...utils import new_tab
+from ... import utils, scraping
 from ..base import SearchConnector, SearchResult
-
-scraper = cloudscraper.create_scraper()
 
 
 class AltaDefinizione(SearchConnector):
@@ -32,10 +28,30 @@ class AltaDefinizione(SearchConnector):
             src = iframes[0].attrs['src']
             if src.startswith('/'):
                 return f"{cls._base_url_}{src}", None
-            text = scraper.get(src).text
-            soup = bs4.BeautifulSoup(text)
+            soup = bs4.BeautifulSoup(scraping.get(src).text)
             return cls._find_in_soup(soup)
         return None, None
+
+    @staticmethod
+    def _extract_item_details(item_soup):
+        details = {}
+        for li in item_soup.find('ul', {'id': 'details'}).find_all('li'):
+            label = li.find('label')
+            key = label.text.split(':')[0].strip()
+            span = li.find('span')
+            if span:
+                if span['id'] == 'staring':
+                    value = [a.text for a in span.find_all('a')]
+                else:
+                    value = span.attrs['data-value']
+            else:
+                a = li.find('a')
+                if a:
+                    value = a.text
+                else:
+                    value = int(li.text.split('\n')[-1])
+            details[key] = value
+        return details
 
     @classmethod
     def _do_search(cls, query: str, title_only: bool) -> SearchResult:
@@ -45,15 +61,16 @@ class AltaDefinizione(SearchConnector):
         form = {'do': 'search', 'subaction': 'search', 'story': query}
         if title_only:
             form['titleonly'] = 3
-        text = scraper.post(url, data=form).text
-        soup = bs4.BeautifulSoup(text)
+        soup = bs4.BeautifulSoup(scraping.post(url, data=form).text)
         for wrapper in soup.find_all('div', 'wrapperImage'):
             a = wrapper.find('a')
             image_url = a.find('img').attrs['src']
-            url = a.attrs['href']
+            item_url = a.attrs['href']
             title = wrapper.find('div', {'class': 'info'}).find('h2', {'class': 'titleFilm'}).find('a').text
-            item = cls(title, url, image_url=image_url, lang='it')
-            if check_in(query, title):
+            item_soup = bs4.BeautifulSoup(scraping.get(item_url).text)
+            details = cls._extract_item_details(item_soup)
+            item = cls(original_title=title, url=item_url, image_url=image_url, year=details['Anno'], lang='it')
+            if utils.check_in(query, title):
                 main_list.append(item)
             else:
                 secondary_list.append(item)
@@ -73,7 +90,7 @@ class AltaDefinizione(SearchConnector):
     @classmethod
     async def execute(cls, content: dict):
         original_url = content['url']
-        soup = bs4.BeautifulSoup(scraper.get(original_url).text)
+        soup = bs4.BeautifulSoup(scraping.get(original_url).text)
         partials, key = cls._find_in_soup(soup)
         for frame_name in ['guardahd', 'altaqualita/player']:
             if partials:
@@ -86,4 +103,4 @@ class AltaDefinizione(SearchConnector):
                     p = f"https:{p}"
             else:
                 p = partials
-            return new_tab(p)
+            return utils.new_tab(p)

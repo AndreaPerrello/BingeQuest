@@ -9,14 +9,21 @@ _lang_map = {'en': 'ENG', 'it': 'ITA'}
 
 
 class SearchConnector:
-
     children: List = []
 
-    def __init__(self, original_title: str, url: str = None, image_url: str = None, lang: str = None):
+    def __init__(
+            self,
+            original_title: str,
+            url: str = None,
+            image_url: str = None,
+            lang: str = None,
+            year: int = None
+    ):
         self._original_title = urllib.parse.unquote(original_title)
         self._url = url
         self._image_url = image_url
         self._lang = lang
+        self._year = year
 
     def __lt__(self, other):
         return self.title < other.title
@@ -26,8 +33,14 @@ class SearchConnector:
 
     @property
     def title(self) -> str:
+        title = self._original_title
+        if self._year:
+            title = f"{title} [{self._year}]"
         language = _lang_map.get(self._lang, _lang_map['en'])
-        return f"{self._original_title} ({language})"
+        language_string = f"({language})"
+        if language_string in title:
+            return title
+        return f"{title} {language_string}"
 
     @property
     def query_title(self) -> str:
@@ -47,7 +60,7 @@ class SearchConnector:
 
     @property
     def src(self) -> str:
-        return self._image_url
+        return self._image_url if self._image_url else '/assets/images/blank-poster.jpg'
 
     @classmethod
     def content_from_hash(cls, media_hash: str) -> (Optional[str], Optional[str]):
@@ -100,4 +113,3 @@ class SearchResult:
 
     def sorted(self):
         return self.__class__(sorted(self.main.values()), sorted(self.secondary.values()))
-
