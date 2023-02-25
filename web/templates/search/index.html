@@ -1,0 +1,339 @@
+{% extends "layout/main.html" %}
+{% block content %}
+{% include "search/form.html "%}
+<main id="main" class="site-main watchlist-contens">
+	<div class="container-fluid">
+		<ul class=" row list-inline  mb-0 iq-rtl-direction ">
+			{% for item in result.main.values(): %}
+			<li class="slide-item col-lg-2 col-md-4 col-6 mb-4">
+				<div class="block-images position-relative watchlist-first">
+					<div class="img-box">
+						<img src="{{ item.src }}" class="img-fluid" alt="" loading="lazy">
+					</div>
+					<div class="block-description">
+						<h6 class="iq-title text-left">
+							<a href="{{ item.link }}">{{ item.title }}</a>
+						</h6>
+						<div class="hover-buttons text-left">
+							<a href="{{ item.link }}" role="button" class="btn btn-hover">
+								<i class="fa fa-play mr-1"
+								aria-hidden="true"></i>
+							Play Now</a>
+						</div>
+					</div>
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+		<div class="collapse" id="collapseExample3">
+			<ul class=" row list-inline  mb-0 iq-rtl-direction ">
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/09.jpg" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">
+								The Illusion</a>
+							</h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">1hr : 22mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+2</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/36.png" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">King of Jungle </a></h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">1hr : 35mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+0</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/34.png" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">
+								The Dinosaur </a>
+							</h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">1hr : 44mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+3</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/04.jpg" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">
+								Jumbo Queen</a>
+							</h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">2hr : 12mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+4</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/33.jpg" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">Black Pearl</a></h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">
+								1hr : 24mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+0</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6  mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/01.jpg" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">
+								Zombie Island</a>
+							</h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">1hr : 48mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+2</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="slide-item col-lg-3 col-md-4 col-sm-6 mb-4">
+					<div class="block-images position-relative">
+						<div class="img-box">
+							<img src="../assets/images/genre/09.jpg" class="img-fluid" alt="" loading="lazy">
+						</div>
+						<div class="block-description">
+							<h6 class="iq-title"><a href="../html/genres-detail.html">
+								The Illusion</a>
+							</h6>
+							<div class="movie-time d-flex align-items-center my-2">
+								<span class="text-white">1hr : 22mins</span>
+							</div>
+							<div class="hover-buttons">
+								<a href="../html/genres-detail.html" role="button" class="btn btn-hover"><i class="fa fa-play mr-1"
+									aria-hidden="true"></i>
+								Play Now</a>
+							</div>
+						</div>
+						<div class="block-social-info">
+							<ul class="list-inline p-0 m-0 music-play-lists">
+								<li class="share">
+									<span><i class="ri-share-fill"></i></span>
+									<div class="share-box">
+										<div class="d-flex align-items-center">
+											<a href="https://www.facebook.com/sharer?u=https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												target="_blank" rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-facebook-fill"></i></a>
+											<a href="https://twitter.com/intent/tweet?text=Currentlyreading" target="_blank"
+												rel="noopener noreferrer" class="share-ico" tabindex="0"><i
+												class="ri-twitter-fill"></i></a>
+											<a href="#" data-link="https://iqonic.design/wp-themes/streamit_wp/movie/shadow/"
+												class="share-ico iq-copy-link" tabindex="0"><i class="ri-links-fill"></i></a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<span><i class="ri-heart-fill"></i></span>
+									<span class="count-box">+2</span>
+								</li>
+								<li><span><i class="ri-add-line"></i></span></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</main>
+{% endblock %}

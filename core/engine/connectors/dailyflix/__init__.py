@@ -1,1 +1,1 @@
-from .connector import MainDailyFlix
+from .main_dailyflix import MainDailyFlix

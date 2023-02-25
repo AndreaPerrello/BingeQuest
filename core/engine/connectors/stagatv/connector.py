@@ -1,27 +1,23 @@
 from ... import security
 from ..base import SearchConnector, SearchResult
-from .episode import StagaTV_Episode
-from . import lib
+from .series_season import StagaTV_Series
+from .lib import Series
 
 
 class StagaTV(SearchConnector):
 
-    # FIXME: 'Peaky-Blinders' like seasons may be packed into a single result
-    # FIXME: 'Breaking-Bad' like season are returned with the season name in the main result
-
-    children = [StagaTV_Episode]
-
-    _base_url_ = "https://www.stagatv.com"
+    children = [StagaTV_Series]
 
     @property
     def link(self) -> str:
-        return security.url_for('search', q=self.query_title, u=StagaTV_Episode.uid())
+        return security.url_for('search', q=self.query_title, u=StagaTV_Series.uid())
 
     @classmethod
     def search(cls, query: str) -> SearchResult:
         _list = list()
-        for series_season in lib.SeriesSeason.get_all(query):
-            _list.append(cls(original_title=series_season.title, image_url=series_season.image_url))
+        for series in Series.get_uniques(query):  # type: Series
+            series.scrape()
+            item = cls(original_title=series.title, image_url=series.image_url, year=series.year)
+            _list.append(item)
         # Return results
         return SearchResult(_list)
-

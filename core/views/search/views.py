@@ -35,18 +35,45 @@ def load_blueprints(core):
         uid = data.get('u')
         result = await core.engine.do_search(query, uid=uid)
         # Additional parameters for the view
-        kwargs = {}
+        kwargs = dict()
         if query:
             kwargs['title_prefix'] = f'{query} - '
         # Render the view
-        return await render_template('search/results.html', result=result, **kwargs)
+        return await render_template('search/index.html', result=result, **kwargs)
 
-    @core.app.route('/proxy_post', methods=['POST'])
-    async def proxy_post():
+    @core.app.route('/deferred_execute', methods=['POST'])
+    async def deferred_execute():
         try:
-            params = await request.form
-            url = params['url']
-            data = {k.replace('data[', '').replace(']', ''): v for k, v in params.items() if k.startswith('data')}
-            return await core.engine.proxy_post(url, data=data)
+            # Decrypt secured data
+            kwargs = security.decrypt_dict(request.args.get('d'))
+            uid = kwargs.pop('u', None)
+            if not uid:
+                return core.response_bad_request('Unable to process the request.')
+            return await core.engine.defer(uid, **kwargs)
         except Exception as e:
             return str(e), 500
+
+    # @core.app.route('/proxy')
+    # async def proxy():
+    #     # Decrypt secured data
+    #     d = request.args.get('d')
+    #     if not d:
+    #         return redirect(url_for('index'))
+    #     try:
+    #         kwargs = security.decrypt_dict(d)
+    #     except:
+    #         return redirect(url_for('index'))
+    #     method = kwargs['method']
+    #     url = urllib.parse.unquote(kwargs['url'])
+    #     args = {k.title(): v for k, v in kwargs.items()}
+    #     if method == 'get':
+    #         response = scraping.get(url, headers=args)
+    #     elif method == 'post':
+    #         response = scraping.post(url, data=args)
+    #     else:
+    #         return core.response_bad_request('Unable to process the request.')
+    #     soup = bs4.BeautifulSoup(response.text)
+    #     base_tag = soup.new_tag('base')
+    #     base_tag['href'] = url
+    #     soup.html.head.append(base_tag)
+    #     return str(soup), response.status_code

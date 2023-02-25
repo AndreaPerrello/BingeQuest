@@ -1,9 +1,11 @@
 import abc
 import urllib.parse
-from typing import Optional, List, Any
+import webbrowser
+from typing import Optional, List, Any, Dict
+
+from quart import render_template, url_for
 
 from .. import security
-from ..utils import new_tab
 
 _lang_map = {'en': 'ENG', 'it': 'ITA'}
 
@@ -14,16 +16,22 @@ class SearchConnector:
     def __init__(
             self,
             original_title: str,
+            base_title: str = None,
+            details: str = None,
             url: str = None,
             image_url: str = None,
             lang: str = None,
-            year: int = None
+            year: int = None,
+            *args,
+            **kwargs
     ):
         self._original_title = urllib.parse.unquote(original_title)
-        self._url = url
-        self._image_url = image_url
-        self._lang = lang
-        self._year = year
+        self._base_title: str = base_title
+        self._details: str = details
+        self._url: str = url
+        self._image_url: str = image_url
+        self._lang: str = lang
+        self._year: int = year
 
     def __lt__(self, other):
         return self.title < other.title
@@ -74,12 +82,45 @@ class SearchConnector:
     def media_hash(self) -> str:
         return security.encrypt_dict(content=self.get_content(), uid=self.uid())
 
+    # Methods
+
     def get_content(self) -> dict:
         return {'url': self.url}
 
     @classmethod
+    async def render_player_deferred(
+            cls, player_poster_url: str = None,
+            player_src_base_url: str = '', mime_type: str = None, **kwargs):
+        """
+        Render a deferred media-player (video-player with deferred loading function).
+        :param player_poster_url: (optional) URL of the player poster to render after defer loading.
+        :param player_src_base_url: (optional) Base source url to prepend to the deferred result file.
+        :param mime_type: (optional) Mime-type of the deferred resource; default is 'video/mp4'.
+        :param kwargs: (optional) Key-value arguments to pass to the deferred function.
+        """
+        mime_type = mime_type or 'video/mp4'
+        player_poster_url = player_poster_url or '#'
+        player_src_base_url = player_src_base_url or ''
+        return await render_template(
+            'media/player/deferred.html',
+            ajax_url=url_for('deferred_execute'), ajax_method='post',
+            encrypted_ajax_data=security.encrypt_dict(u=cls.uid(), **kwargs),
+            player_poster=player_poster_url,
+            player_src_base_url=player_src_base_url,
+            mime_type=mime_type, **kwargs)
+
+    @classmethod
+    def new_tab(cls, url):
+        webbrowser.open_new_tab(url)
+        return "<script>history.back()</script>"
+
+    @classmethod
+    async def execute_deferred(cls, **kwargs) -> Optional[Dict]:
+        return dict()
+
+    @classmethod
     async def execute(cls, content: Any) -> Any:
-        return new_tab(content['url'])
+        return cls.new_tab(content['url'])
 
     @classmethod
     @abc.abstractmethod

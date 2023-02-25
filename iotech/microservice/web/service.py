@@ -144,12 +144,12 @@ class WebService(ServiceInterface):
     def _response_error(status_code: Union[int, HTTPStatus], desc: str):
         return {"message": desc}, status_code
 
-    def _response_bad_request(self, desc):
+    def response_bad_request(self, desc):
         return self._response_error(HTTPStatus.BAD_REQUEST, desc)
 
     def response_missing_payload(self):
         """ Return an API response of missing payload. """
-        return self._response_bad_request("Missing request payload.")
+        return self.response_bad_request("Missing request payload.")
 
     def response_error(self, e: Union[BaseException, str], status_code: Union[int, HTTPStatus] = None):
         """
@@ -161,7 +161,7 @@ class WebService(ServiceInterface):
         if isinstance(e, werkzeug.exceptions.BadRequestKeyError):
             return self.response_error(KeyError(', '.join(e.args)))
         if isinstance(e, KeyError):
-            return self._response_bad_request(f"Missing key(s) {e} in request arguments or payload.")
+            return self.response_bad_request(f"Missing key(s) {e} in request arguments or payload.")
         status_code = status_code or HTTPStatus.INTERNAL_SERVER_ERROR
         return self._response_error(status_code, str(e))
 

@@ -1,6 +1,8 @@
+import base64
 import json
 from typing import List, Optional
 
+import requests
 from bs4 import BeautifulSoup
 
 from ... import scraping
@@ -60,8 +62,16 @@ class AnimeUnity(SearchConnector):
     @classmethod
     def search(cls, query: str) -> Optional[SearchResult]:
         anime_list = cls._do_search(title=query, order="Popolarità")
-        return SearchResult([cls(
-            original_title=anime.main_title, url=anime.url,
-            image_url=anime.thumbnail, lang='it'
-        ) for anime in anime_list])
+        _list = list()
+        for anime in anime_list:
+            # image_base64 = base64.b64encode(requests.get(anime.cover_image).content)
+            # ext = anime.thumbnail.split('.')[-1]
+            # image_url = f'data:image/{ext};base64, {image_base64.decode()}'
+            image_url = anime.thumbnail
+            item = cls(
+                original_title=anime.main_title, url=anime.url,
+                image_url=image_url, lang='it'
+            )
+            _list.append(item)
+        return SearchResult(_list)
 

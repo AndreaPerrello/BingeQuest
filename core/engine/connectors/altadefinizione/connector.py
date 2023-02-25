@@ -103,4 +103,4 @@ class AltaDefinizione(SearchConnector):
                     p = f"https:{p}"
             else:
                 p = partials
-            return utils.new_tab(p)
+            return cls.new_tab(p)

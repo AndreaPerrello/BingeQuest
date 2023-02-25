@@ -1,47 +1,67 @@
 {% extends "layout/main.html" %}
+
 {% block head %}
 <style>
-	#videoWrapper {
-	  position: relative;
-	  padding-bottom: calc(var(--aspect-ratio, .5625) * 100%);
-	  height: 0;
+	.vjs-modal-dialog-content {
+		display: none;
 	}
-	#videoWrapper #videoPlayer {
-	  position: absolute;
-	  top: 0;
-	  left: 0;
-	  width: 100%;
-	  height: 100%;
+	.vjs-paused .vjs-big-play-button,
+	.vjs-paused.vjs-has-started .vjs-big-play-button {
+	   display: block;
+	}
+	.vjs-playing.vjs-has-started .vjs-icon-play:before,
+	.vjs-playing.vjs-has-started .vjs-play-control .vjs-icon-placeholder:before,
+	.vjs-playing.vjs-has-started .vjs-big-play-button .vjs-icon-placeholder:before {
+		content: "\f103";
+	}
+	.vjs-paused.vjs-has-started .vjs-icon-play:before,
+	.vjs-paused.vjs-has-started .vjs-play-control .vjs-icon-placeholder:before,
+	.vjs-paused.vjs-has-started .vjs-big-play-button .vjs-icon-placeholder:before {
+		content: "\f101";
 	}
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="col-md-12 col-sm-12 col-xs-12">
-	<div id="videoWrapper" style="--aspect-ratio: 9 / 16;">
-		<video id="videoPlayer" poster="#" controls>
-			<source src="" type='{{ mime_type }};'>
-			<p>This is fallback content</p>
-		</video>
+<section class="iq-main-slider site-video">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="pt-0">
+					<video id="videoPlayer" class="video-js vjs-big-play-centered w-100"
+						   controls preload="auto" poster="{{ player_poster }}"
+						   data-setup='{}'>
+						<source src="" type="{{ mime_type }}" />
+					</video>
+				</div>
+			</div>
+		</div>
 	</div>
-</div>
+</section>
 {% endblock %}
+
 {% block script %}
+<!-- Swiper JS -->
+<script src="/assets/js/swiper.min.js"></script>
+<script src="/assets/js/swiper.js"></script>
 <script>
 	$(document).ready(function() {
-		var videoWrapper = $("#videoWrapper");
-		var videoPlayer = $("#videoPlayer");
-		var loader = "/assets/images/loader.gif";
-		videoPlayer.attr("poster", loader);
+		var player = videojs("videoPlayer", {
+			errorDisplay: false
+		});
 		$.ajax({
-			url: '/proxy_post',
-			data: {
-				url: '{{ source_url }}',
-				data: JSON.parse('{{ source_data | tojson | safe }}')
-			},
-			type: 'post',
+			url: '{{ ajax_url }}?d={{ encrypted_ajax_data }}',
+			type: '{{ ajax_method }}',
 			success: function(result) {
-				videoPlayer.attr("src", '{{ base_url }}' + result['file']);
-				videoPlayer.attr("poster", '{{ source_poster }}');
+				var src = '{{ player_src_base_url }}' + result['file_url'];
+				player.responsive(true);
+				player.src({
+					type: '{{ mime_type }}',
+					src: src
+				});
+			},
+			error: function(result) {
+				console.log(result);
 			}
 		});
 	});

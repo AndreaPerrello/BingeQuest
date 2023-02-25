@@ -33,3 +33,4 @@ beautifulsoup4 == 4.9.3
 aniso8601 == 9.0.1
 PyMovieDb == 0.0.7
 diskcache == 5.4.0
+goodbyecaptcha

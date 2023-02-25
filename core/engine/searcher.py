@@ -3,7 +3,7 @@ from typing import Optional, Set
 
 from .connectors.base import SearchConnector, SearchResult
 from .cache import Cache
-from . import connectors, scraping
+from . import connectors
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -36,15 +36,22 @@ class SearchEngine:
         return _recursive(list(cls._base_map))
 
     def _internal_search(self, c: SearchConnector, *args, **kwargs):
-        try:
-            return c.search(*args, **kwargs)
-        except Exception as e:
-            LOGGER.warning(f"{c.uid()}: {e}")
+        return c.search(*args, **kwargs)
+
+    @classmethod
+    def _all_connectors(cls, uid: str = None):
+        return {c for c in cls._connectors_map(not uid) if not uid or c.uid() == uid}
+
+    @classmethod
+    def _get_connector_from_uid(cls, uid: str):
+        for c in cls._connectors_map(not uid):
+            if c.uid() == uid:
+                return c
 
     async def do_search(self, query: str, uid: str = None) -> SearchResult:
         result: SearchResult = SearchResult()
         if query:
-            _map = {c for c in self._connectors_map(not uid) if not uid or c.uid() == uid}
+            _map = self._all_connectors(uid)
             with ThreadPoolExecutor(max_workers=len(_map)) as executor:
                 futures = [executor.submit(self._internal_search, c, query) for c in _map]
                 for future in as_completed(futures):
@@ -61,10 +68,14 @@ class SearchEngine:
                 return await c.execute(content)
 
     @classmethod
-    async def proxy_post(cls, url: str, **kwargs) -> dict:
+    async def defer(cls, uid: str, **kwargs) -> dict:
         cache_name = 'proxy_post'
-        cache_value = Cache().get(cache_name, url=url, **kwargs)
+        cache_value = Cache().get(cache_name, **kwargs)
         if not cache_value:
-            cache_value = scraping.post(url, **kwargs).json()
-            Cache().set(cache_name, cache_value, url=url, **kwargs)
+            connector = cls._get_connector_from_uid(uid)
+            if not connector:
+                raise ValueError('Could not parse the request.')
+            cache_value = await connector.execute_deferred(**kwargs)
+            if cache_value:
+                Cache().set(cache_name, cache_value, **kwargs)
         return cache_value
