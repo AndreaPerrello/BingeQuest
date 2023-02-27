@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import urllib.parse
 from typing import List, Optional
 
@@ -16,19 +16,7 @@ class MainDailyFlix(SearchConnector):
 
     _base_url_ = "https://main.dailyflix.stream"
     _base_storage_url_ = "https://filemoon.sx/"
-
-    # @classmethod
-    # async def execute_deferred(cls, url: str) -> dict:
-    #     file_code = url.split('/')[-1]
-    #     download_page_url = f"{cls._base_storage_url_}download/{file_code}"
-    #     captcha_response = scraping.solve_captcha(download_page_url)
-    #     data = {'g-recaptcha-response': captcha_response, 'b': 'download', 'file_code': file_code, 'adb': 0}
-    #     result = scraping.post(download_page_url, data=data)
-    #     soup = bs4.BeautifulSoup(result.text)
-    #     remote_file_url = soup.find('a', {'class': 'button'})['href']
-    #     file_url = quart.url_for('proxy', method='get', url=remote_file_url, referer=cls._base_storage_url_)
-    #     file_url = url
-    #     return dict(file_url=file_url)
+    _untrusted_source_url = 'https://playhydrax.com'
 
     @classmethod
     async def execute(cls, content: dict):
@@ -45,6 +33,12 @@ class MainDailyFlix(SearchConnector):
         title = link.text
         url = link['href']
         soup = bs4.BeautifulSoup(scraping.get(url).text)
+        iframe = soup.find('iframe')
+        if not iframe:
+            return
+        file_url = iframe['src'].split('<')[0].strip()
+        if file_url.startswith(cls._untrusted_source_url):
+            return
         breadcrumbs = [a.text for a in soup.findAll(
             lambda tag: tag.name == 'a' and 'rel' in tag.attrs and 'tag' in tag.attrs['rel'])]
         if 'TV' in breadcrumbs:
@@ -55,10 +49,6 @@ class MainDailyFlix(SearchConnector):
                 kwargs['year'] = int(b.replace('#', ''))
             except:
                 pass
-        iframe = soup.find('iframe')
-        if not iframe:
-            return
-        file_url = iframe['src'].split('<')[0].strip()
         posters = soup.findAll(
             lambda tag: tag.name == 'img' and 'aria-label' in tag.attrs
                         and tag.attrs['aria-label'].startswith('Poster'))
@@ -80,10 +70,8 @@ class MainDailyFlix(SearchConnector):
             return
         # Multiprocess table items
         trs = table.find_all('tr')
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(cls._scrape_tr, tr) for tr in trs]
-            for future in as_completed(futures):
-                item = future.result()
+        with ThreadPoolExecutor(max_workers=10) as p:
+            for item in p.map(cls._scrape_tr, trs):
                 if item:
                     if utils.check_in(query, item.title):
                         main_items.append(item)

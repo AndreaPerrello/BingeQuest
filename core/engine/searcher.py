@@ -1,4 +1,5 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import functools
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Set
 
 from .connectors.base import SearchConnector, SearchResult
@@ -15,7 +16,7 @@ class SearchEngine:
         connectors.AltaDefinizione,
         connectors.AnimeUnity,
         connectors.StagaTV,
-        connectors.MainDailyFlix,
+        # connectors.MainDailyFlix,
         connectors.StreamingCommunity,
         # connectors.YouTube,
     }
@@ -35,15 +36,15 @@ class SearchEngine:
             return parents + _recursive(children)
         return _recursive(list(cls._base_map))
 
-    def _internal_search(self, c: SearchConnector, *args, **kwargs):
-        return c.search(*args, **kwargs)
+    def _internal_search(self, q: str, c: SearchConnector):
+        return c.search(q)
 
     @classmethod
-    def _all_connectors(cls, uid: str = None):
+    def _all_connectors(cls, uid: str = None) -> Set[SearchConnector]:
         return {c for c in cls._connectors_map(not uid) if not uid or c.uid() == uid}
 
     @classmethod
-    def _get_connector_from_uid(cls, uid: str):
+    def _get_connector_from_uid(cls, uid: str) -> SearchConnector:
         for c in cls._connectors_map(not uid):
             if c.uid() == uid:
                 return c
@@ -52,12 +53,10 @@ class SearchEngine:
         result: SearchResult = SearchResult()
         if query:
             _map = self._all_connectors(uid)
-            with ThreadPoolExecutor(max_workers=len(_map)) as executor:
-                futures = [executor.submit(self._internal_search, c, query) for c in _map]
-                for future in as_completed(futures):
-                    search_result: SearchResult = future.result()
-                    if search_result:
-                        result.merge(search_result)
+            partial = functools.partial(self._internal_search, query)
+            with ThreadPoolExecutor(max_workers=len(_map)) as p:
+                for r in p.map(partial, _map):
+                    result.merge(r)
         return result.sorted()
 
     @classmethod

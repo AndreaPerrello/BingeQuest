@@ -2,9 +2,11 @@
 
 {% block head %}
 <style>
+	{% if error is not defined: %}
 	.vjs-modal-dialog-content {
 		display: none;
 	}
+	{% endif %}
 	.vjs-paused .vjs-big-play-button,
 	.vjs-paused.vjs-has-started .vjs-big-play-button {
 	   display: block;
@@ -31,7 +33,7 @@
 					<video id="videoPlayer" class="video-js vjs-big-play-centered w-100"
 						   controls preload="auto" poster="{{ player_poster }}"
 						   data-setup='{}'>
-						<source src="" type="{{ mime_type }}" />
+						<source src="" type="" />
 					</video>
 				</div>
 			</div>
@@ -46,9 +48,11 @@
 <script src="/assets/js/swiper.js"></script>
 <script>
 	$(document).ready(function() {
-		var player = videojs("videoPlayer", {
-			errorDisplay: false
-		});
+		document.querySelector("#videoPlayer").addEventListener("error", (event) => {
+		  console.log(event.target.error.message);
+		})
+		{% if error is not defined: %}
+		var player = videojs("videoPlayer");
 		$.ajax({
 			url: '{{ ajax_url }}?d={{ encrypted_ajax_data }}',
 			type: '{{ ajax_method }}',
@@ -64,6 +68,9 @@
 				console.log(result);
 			}
 		});
+		{% else %}
+		console.log({{ error }});
+		{% endif %}
 	});
 </script>
 {% endblock %}

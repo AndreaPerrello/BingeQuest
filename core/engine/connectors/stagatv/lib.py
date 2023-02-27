@@ -10,7 +10,7 @@ from ... import scraping, utils
 
 class SeriesSeasonEpisode:
     files_dl_base_url = "https://stagatvfiles.com"
-    _files_base_url_pattern_ = r"https:\/\/stagatvfiles\.com\/videos\/file\/(?P<data_file>.*)\/.*"
+    files_base_url_pattern = r"https:\/\/stagatvfiles\.com\/videos\/file\/(?P<data_file>.*)\/.*"
 
     # noinspection PyTypeChecker
     def __init__(self, series_season, season_string: str, base_soup: bs4.BeautifulSoup):
@@ -52,34 +52,6 @@ class SeriesSeasonEpisode:
     @functools.cached_property
     def url(self) -> str:
         return self._base_soup['href']
-
-    # Scraped properties
-
-    def scrape(self):
-        item_soup = bs4.BeautifulSoup(scraping.get(self.url).text)
-        self._item_soup = item_soup
-        return item_soup
-
-    def set_item_soup(self, soup):
-        self._item_soup = soup
-
-    @property
-    def file_url(self) -> Optional[str]:
-        if not self._item_soup:
-            return
-        url = self._item_soup.find('div', {'class': 'dl-item'}).find('a')['href']
-        if url is None:
-            print()
-        return url
-
-    @property
-    def token(self) -> Optional[str]:
-        file_url = self.file_url
-        if not file_url:
-            return
-        match = re.match(self._files_base_url_pattern_, file_url)
-        if match:
-            return match['data_file']
 
 
 class Series:

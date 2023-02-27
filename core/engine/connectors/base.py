@@ -90,7 +90,7 @@ class SearchConnector:
     @classmethod
     async def render_player_deferred(
             cls, player_poster_url: str = None,
-            player_src_base_url: str = '', mime_type: str = None, **kwargs):
+            player_src_base_url: str = '', mime_type: str = None, ajax_method: str = None, **kwargs):
         """
         Render a deferred media-player (video-player with deferred loading function).
         :param player_poster_url: (optional) URL of the player poster to render after defer loading.
@@ -101,10 +101,12 @@ class SearchConnector:
         mime_type = mime_type or 'video/mp4'
         player_poster_url = player_poster_url or '#'
         player_src_base_url = player_src_base_url or ''
+        if not kwargs.get('error'):
+            kwargs['ajax_url'] = url_for('deferred_execute')
+            kwargs['ajax_method'] = ajax_method or 'post'
+            kwargs['encrypted_ajax_data'] = security.encrypt_dict(u=cls.uid(), **kwargs)
         return await render_template(
             'media/player/deferred.html',
-            ajax_url=url_for('deferred_execute'), ajax_method='post',
-            encrypted_ajax_data=security.encrypt_dict(u=cls.uid(), **kwargs),
             player_poster=player_poster_url,
             player_src_base_url=player_src_base_url,
             mime_type=mime_type, **kwargs)
@@ -144,13 +146,14 @@ class SearchResult:
         self.main = main
         self.secondary = {k: v for k, v in secondary.items() if k not in main}
 
-    def merge(self, x):
+    def merge(self, result):
         """
-        :type x: SearchResult
+        :type result: SearchResult
         """
-        main = {**self.main, **x.main}
-        secondary = {**self.secondary, **x.secondary}
-        self._reduce(main, secondary)
+        if result:
+            main = {**self.main, **result.main}
+            secondary = {**self.secondary, **result.secondary}
+            self._reduce(main, secondary)
 
     def sorted(self):
         return self.__class__(sorted(self.main.values()), sorted(self.secondary.values()))
