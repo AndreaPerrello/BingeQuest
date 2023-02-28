@@ -1,1 +1,1 @@
-web: gunicorn web:app
+web: hypercorn -c config/config.toml web:app
