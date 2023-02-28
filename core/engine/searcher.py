@@ -37,7 +37,10 @@ class SearchEngine:
         return _recursive(list(cls._base_map))
 
     def _internal_search(self, q: str, c: SearchConnector):
-        return c.search(q)
+        try:
+            return c.search(q)
+        except:
+            pass
 
     @classmethod
     def _all_connectors(cls, uid: str = None) -> Set[SearchConnector]:
