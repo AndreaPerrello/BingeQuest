@@ -13,12 +13,12 @@ LOGGER = logging.getLogger(__name__)
 class SearchEngine:
 
     _base_map: Set[SearchConnector] = {
+        connectors.Cb01,
         connectors.AltaDefinizione,
         connectors.AnimeUnity,
         connectors.StagaTV,
         # connectors.MainDailyFlix,
-        connectors.StreamingCommunity,
-        # connectors.YouTube,
+        connectors.StreamingCommunity
     }
 
     def __init__(self, app):

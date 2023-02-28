@@ -1,4 +1,4 @@
-from .altadefinizione import AltaDefinizione
+from .supervideo import AltaDefinizione, Cb01
 from .animeunity import AnimeUnity
 from .stagatv import StagaTV
 from .dailyflix import MainDailyFlix

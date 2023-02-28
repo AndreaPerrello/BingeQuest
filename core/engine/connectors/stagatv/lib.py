@@ -1,8 +1,6 @@
 import functools
 import re
-from typing import Optional, List, Generator
-
-import bs4
+from typing import Optional, List
 
 from iotech.utils import dt
 from ... import scraping, utils
@@ -13,11 +11,11 @@ class SeriesSeasonEpisode:
     files_base_url_pattern = r"https:\/\/stagatvfiles\.com\/videos\/file\/(?P<data_file>.*)\/.*"
 
     # noinspection PyTypeChecker
-    def __init__(self, series_season, season_string: str, base_soup: bs4.BeautifulSoup):
+    def __init__(self, series_season, season_string: str, base_soup):
         self._series_season = series_season
         self._season_string = season_string
-        self._base_soup: bs4.BeautifulSoup = base_soup
-        self._item_soup: bs4.BeautifulSoup = None
+        self._base_soup = base_soup
+        self._item_soup = None
 
     @functools.cached_property
     def _full_number(self) -> str:
@@ -59,9 +57,9 @@ class Series:
     _base_url_ = "https://www.stagatv.com"
 
     # noinspection PyTypeChecker
-    def __init__(self, base_soup: bs4.BeautifulSoup):
-        self._base_soup: bs4.BeautifulSoup = base_soup
-        self._item_soup: bs4.BeautifulSoup = None
+    def __init__(self, base_soup):
+        self._base_soup = base_soup
+        self._item_soup = None
 
     @functools.cached_property
     def full_title(self) -> str:
@@ -80,7 +78,7 @@ class Series:
     # Scraped properties
 
     def scrape(self):
-        self._item_soup = bs4.BeautifulSoup(scraping.get(self._base_soup['href']).text)
+        self._item_soup = scraping.get_soup(self._base_soup['href'])
 
     @property
     def image_url(self) -> Optional[str]:
@@ -121,8 +119,7 @@ class Series:
     @classmethod
     def _yield_all_list_items(cls, query: str) -> List:
         # Scrape series list
-        url = f"{cls._base_url_}/series-lists/"
-        soup = bs4.BeautifulSoup(scraping.get(url, cloud=False).text)
+        soup = scraping.get_soup(f"{cls._base_url_}/series-lists/", cloud=False)
         seasons_list = soup.find('div', {'class': 'soralist'})
         # Yield items which title matches the query
         return seasons_list.findAll(lambda t: t.name == 'li' and utils.check_in(query, t.text))

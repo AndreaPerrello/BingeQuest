@@ -2,8 +2,6 @@ from concurrent.futures import ThreadPoolExecutor
 import urllib.parse
 from typing import List, Optional
 
-import bs4
-
 from .... import utils, scraping
 from ...base import SearchConnector, SearchResult
 
@@ -31,8 +29,7 @@ class MainDailyFlix(SearchConnector):
         if not link:
             return
         title = link.text
-        url = link['href']
-        soup = bs4.BeautifulSoup(scraping.get(url).text)
+        soup = scraping.get_soup(link['href'])
         iframe = soup.find('iframe')
         if not iframe:
             return
@@ -63,8 +60,7 @@ class MainDailyFlix(SearchConnector):
         main_items: List[MainDailyFlix] = list()
         secondary_items: List[MainDailyFlix] = list()
         # Scrape items list
-        url = f"{cls._base_url_}/?s={urllib.parse.quote(query)}"
-        soup = bs4.BeautifulSoup(scraping.get(url).text)
+        soup = scraping.get_soup(f"{cls._base_url_}/?s={urllib.parse.quote(query)}")
         table = soup.find('table', {'class': 'table'})
         if not table:
             return

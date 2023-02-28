@@ -2,8 +2,6 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 
-import bs4
-
 from ..base import SearchConnector, SearchResult
 from .lib import Series, SeriesSeasonEpisode
 from ... import security, scraping
@@ -27,8 +25,7 @@ class StagaTV_SeriesSeason(SearchConnector):
     @classmethod
     async def execute(cls, content: dict):
         kwargs = dict()
-        url = content['url']
-        soup = bs4.BeautifulSoup(scraping.get(url).text)
+        soup = scraping.get_soup(content['url'])
         file_url = soup.find('div', {'class': 'dl-item'}).find('a')['href']
         match = re.match(SeriesSeasonEpisode.files_base_url_pattern, file_url)
         if match:

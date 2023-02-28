@@ -4,8 +4,6 @@ import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional
 
-import bs4
-
 from .utils import get_ratio
 from ... import scraping, utils
 from ..base import SearchConnector, SearchResult
@@ -38,7 +36,7 @@ class StreamingCommunity(SearchConnector):
             image_ratios = {image['sc_url']: get_ratio(image['sc_url']) for image in record['images']}
             image_url = min(image_ratios, key=image_ratios.get)
             series_url = f"{cls._base_titles_url_}/{resource}"
-            series_soup = bs4.BeautifulSoup(scraping.get(series_url).text)
+            series_soup = scraping.get_soup(series_url)
             original_title = series_soup.find('h1', {'class': 'title'}).text
             info = series_soup.find('div', {'class': 'info-span'})
             year = int(info.find('span', {'class': 'desc'}).text.split(' ')[0])
@@ -51,7 +49,7 @@ class StreamingCommunity(SearchConnector):
         """
         # Scrape series list
         url = f"{cls._base_url_}/search?q={urllib.parse.quote(query)}"
-        soup = bs4.BeautifulSoup(scraping.get(url).text)
+        soup = scraping.get_soup(url)
         search_result = soup.find('the-search-page')
         if not search_result:
             return
