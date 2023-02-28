@@ -1,1 +1,1 @@
-web hypercorn -c config -f config.toml
+web hypercorn --config file:config/config.toml
