@@ -52,6 +52,10 @@
 
 name: Docker Build
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: andrea-perrello/binge-quest
+
 on:
   push:
     branches:
@@ -74,4 +78,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
