@@ -14,6 +14,7 @@ expandvars == 0.9.0
 apscheduler == 3.9.1
 # Microservice - WebService
 uvicorn == 0.20.0
+hypercorn == 0.14.3
 Werkzeug == 2.1.2
 flask == 2.1.2
 quart == 0.17.0

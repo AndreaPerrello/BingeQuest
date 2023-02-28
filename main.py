@@ -1,5 +1,4 @@
 import pathlib
-import argparse
 
 from iotech.microservice import startup
 
