@@ -49,7 +49,7 @@ class SearchEngine:
             if c.uid() == uid:
                 return c
 
-    async def do_search(self, query: str, uid: str = None) -> SearchResult:
+    async def do_search(self, query: str, uid: str = None) -> Optional[SearchResult]:
         result: SearchResult = SearchResult()
         if query:
             _map = self._all_connectors(uid)

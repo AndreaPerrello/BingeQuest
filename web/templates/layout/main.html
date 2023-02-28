@@ -35,9 +35,11 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<nav class="navbar navbar-expand-lg navbar-light p-0">
-								<a href="#" class="navbar-toggler c-toggler" style="color: #ddd">
+								{% if display_back_button: %}
+								<a href="#" onclick="backHistory()" class="navbar-toggler c-toggler" style="color: #ddd">
 									<i class="ri-arrow-left-line"></i>
 								</a>
+								{% endif %}
 								<a class="navbar-brand" href="/">
 									<img class="img-fluid logo" src="/assets/images/logo-1.png" loading="lazy" alt="streamit" />
 								</a>
@@ -52,12 +54,14 @@
 								</div>
 								<div class="navbar-right menu-right">
 									<ul class="d-flex align-items-center list-inline m-0">
+										{% if display_back_button: %}
 										<li class="nav-item nav-icon">
-											<a href="#" onclick="javascript:window.history.back()"
+											<a href="#" onclick="backHistory()"
 											   class="search-toggle device-search">
 												<i class="ri-arrow-left-line"></i>
 											</a>
 										</li>
+										{% endif %}
 									</ul>
 								</div>
 							</nav>

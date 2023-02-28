@@ -157,3 +157,7 @@ class SearchResult:
 
     def sorted(self):
         return self.__class__(sorted(self.main.values()), sorted(self.secondary.values()))
+
+    @property
+    def is_empty(self) -> bool:
+        return not self.main and not self.secondary

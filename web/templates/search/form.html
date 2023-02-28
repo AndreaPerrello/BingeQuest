@@ -9,7 +9,7 @@
 								<form class="mt-4" id="searchForm" action="{{ url_for('search') }}">
 									<div class="form-group">
 										<input id="queryInput" type="text" class="form-control mb-0"
-											   name="q" value="{{ request.args.get('q','') }}"
+											   name="q" value="{{ request_query }}"
 											   placeholder="Search a movie, series or anime" autocomplete="off"
 											   spellcheck="false" autofocus>
 									</div>

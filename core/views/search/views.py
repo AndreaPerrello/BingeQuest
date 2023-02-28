@@ -11,7 +11,11 @@ def load_blueprints(core):
         title = "FlickWatch"
         if title_prefix:
             title = f"{title_prefix}{title}"
-        return quart_render_template(*args, title=title, **kwargs)
+        request_query = request.args.get('q', '')
+        display_back = 'result' in kwargs and not kwargs['result'].is_empty
+        return quart_render_template(
+            *args, title=title, request_query=request_query,
+            display_back_button=display_back, **kwargs)
 
     @core.app.route('/')
     async def index():
@@ -52,28 +56,3 @@ def load_blueprints(core):
             return await core.engine.defer(uid, **kwargs)
         except Exception as e:
             return str(e), 500
-
-    # @core.app.route('/proxy')
-    # async def proxy():
-    #     # Decrypt secured data
-    #     d = request.args.get('d')
-    #     if not d:
-    #         return redirect(url_for('index'))
-    #     try:
-    #         kwargs = security.decrypt_dict(d)
-    #     except:
-    #         return redirect(url_for('index'))
-    #     method = kwargs['method']
-    #     url = urllib.parse.unquote(kwargs['url'])
-    #     args = {k.title(): v for k, v in kwargs.items()}
-    #     if method == 'get':
-    #         response = scraping.get(url, headers=args)
-    #     elif method == 'post':
-    #         response = scraping.post(url, data=args)
-    #     else:
-    #         return core.response_bad_request('Unable to process the request.')
-    #     soup = bs4.BeautifulSoup(response.text)
-    #     base_tag = soup.new_tag('base')
-    #     base_tag['href'] = url
-    #     soup.html.head.append(base_tag)
-    #     return str(soup), response.status_code

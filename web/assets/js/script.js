@@ -10,6 +10,10 @@ function moveCursorToEnd(id) {
   }
 }
 
+function backHistory() {
+    javascript:window.history.back();
+}
+
 $(document).ready(function () {
     moveCursorToEnd('queryInput');
 });
