@@ -1,1 +1,1 @@
-web: uvicorn -b 0.0.0.0:8080 web:app
+web: uvicorn --host 0.0.0.0 --port 8080 web:app
