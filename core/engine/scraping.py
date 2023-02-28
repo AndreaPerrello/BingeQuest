@@ -9,7 +9,6 @@ def get(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
         result = cloud_scraper.get(url, *args, **kwargs)
     else:
         result = requests.get(url, *args, verify=False, **kwargs)
-    print(result)
     return result
 
 
@@ -19,7 +18,6 @@ def post(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
         result = cloud_scraper.post(url, *args, **kwargs)
     else:
         result = requests.post(url, *args, verify=False, **kwargs)
-    print(result.text)
     return result
 
 
