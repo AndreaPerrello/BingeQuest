@@ -1,4 +1,4 @@
-FROM arm32v7/python:3.9
+FROM arm32v7/python:3.9-slim-buster
 
 # Copy files
 COPY ./ /app
