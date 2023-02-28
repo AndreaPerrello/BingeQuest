@@ -1,4 +1,4 @@
-FROM arm32v8/python:3.9
+FROM arm32v7/python:3.9
 
 # Copy files
 COPY ./ /app
