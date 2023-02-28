@@ -1,1 +1,1 @@
-web hypercorn -b 0.0.0.0:8080 main:app
+web hypercorn -c config -f config.toml
