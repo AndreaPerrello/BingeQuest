@@ -1,1 +1,1 @@
-web hypercorn - 0.0.0.0:8080 main:app
+web hypercorn -b 0.0.0.0:8080 main:app
