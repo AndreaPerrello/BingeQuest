@@ -1,68 +1,106 @@
-<!DOCTYPE html>
-<!--[if IE 7]>
-<html class="ie ie7 no-js" lang="en-US">
-<![endif]-->
-<!--[if IE 8]>
-<html class="ie ie8 no-js" lang="en-US">
-<![endif]-->
-<!--[if !(IE 7) | !(IE 8)  ]><!-->
-<html lang="en" class="no-js">
-  <head>
-      <title>{{ title }}</title>
-      <meta charset="UTF-8">
-      <meta name="description" content="">
-      <meta name="keywords" content="">
-      <meta name="author" content="">
-      <link rel="profile" href="#">
-      <!--Google Font-->
-      <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
-      <!-- Mobile specific meta -->
-      <meta name=viewport content="width=device-width, initial-scale=1">
-      <meta name="format-detection" content="telephone-no">
-      <!-- CSS files -->
-      <link rel="stylesheet" href="/assets/css/plugins.css">
-      <link rel="stylesheet" href="/assets/css/style.css">
-      {% block head %}{% endblock %}
-  </head>
-  <body>
-  <!--preloading-->
-  <div id="preloader">
-      <img class="logo" src="/assets/images/logo.png" alt="" width="119" height="58">
-      <div id="status">
-          <span></span>
-          <span></span>
-      </div>
-  </div>
-  <!--end of preloading-->
-
-  <div class="hero common-hero" style="height: 140px">
-      <div class="container">
-          <div class="row">
-              <div class="col-md-12">
-                  <div>
-                      <a href="/">
-                        <img class="logo" src="/assets/images/logo-no-image.png" alt="" width="30%">
-                      </a>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  <div class="page-single" style="padding-top: 10px">
-      <div class="container">
-          <div class="row ipad-width">
-              {% block content %}{% endblock %}
-          </div>
-      </div>
-  </div>
-  <!-- footer section-->
-  <footer class="ht-footer"></footer>
-  <!-- end of footer section-->
-  <script src="/assets/js/jquery.js"></script>
-  <script src="/assets/js/plugins.js"></script>
-  <script src="/assets/js/plugins2.js"></script>
-  <script src="/assets/js/custom.js"></script>
-  {% block script %}{% endblock %}
-  </body>
-<!-- moviegrid07:38-->
+<!doctype html>
+<html lang="en-US">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>{{ title }}</title>
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="/assets/images/favicon.ico" />
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+		<!-- Typography CSS -->
+		<link rel="stylesheet" href="/assets/css/typography.css">
+		<!-- Style -->
+		<link rel="stylesheet" href="/assets/css/style.css" />
+		<!-- Responsive -->
+		<link rel="stylesheet" href="/assets/css/responsive.css" />
+      	<link rel="stylesheet" href="/assets/css/video-js.css"/>
+		<!-- Style -->
+		<link rel="stylesheet" href="/assets/css/style.css" />
+        {% block head %}{% endblock %}
+	</head>
+	<body>
+		<!-- loader Start -->
+		<div id="loading">
+			<div id="loading-center">
+			</div>
+		</div>
+		<!-- loader END -->
+		<!-- Header Start -->
+		<header id="main-header">
+			<div class="main-header">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12">
+							<nav class="navbar navbar-expand-lg navbar-light p-0">
+								{% if display_back_button: %}
+								<a href="#" onclick="backHistory()" class="navbar-toggler c-toggler" style="color: #ddd">
+									<i class="ri-arrow-left-line"></i>
+								</a>
+								{% endif %}
+								<a class="navbar-brand" href="/">
+									<img class="img-fluid logo" src="/assets/images/logo-1.png" loading="lazy" alt="streamit" />
+								</a>
+								<div class="collapse navbar-collapse" id="navbarSupportedContent">
+									<div class="menu-main-menu-container">
+										<ul id="top-menu" class="navbar-nav ml-auto">
+											<li class="menu-item">
+												<a><span></span></a>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<div class="navbar-right menu-right">
+									<ul class="d-flex align-items-center list-inline m-0">
+										{% if display_back_button: %}
+										<li class="nav-item nav-icon">
+											<a href="#" onclick="backHistory()"
+											   class="search-toggle device-search">
+												<i class="ri-arrow-left-line"></i>
+											</a>
+										</li>
+										{% endif %}
+									</ul>
+								</div>
+							</nav>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- Header End -->
+		<!-- MainContent -->
+		{% block content %}{% endblock %}
+		<!-- MainContent End-->
+		<!-- back-to-top -->
+		<div id="back-to-top">
+			<a class="top" href="#top" id="top"> <i class="fa fa-angle-up"></i> </a>
+		</div>
+		<!-- back-to-top End -->
+	   	<!-- video.js -->
+	   	<script src="/assets/js/video.min.js"></script>
+	   	<script src="/assets/plugin/videojs-youtube-master/youtube.js"></script>
+		<!-- jQuery, Popper JS -->
+		<script src="/assets/js/jquery.min.js"></script>
+		<script src="/assets/js/popper.min.js"></script>
+		<!-- Bootstrap JS -->
+		<script src="/assets/js/bootstrap.min.js"></script>
+		<!-- owl carousel Js -->
+		<script src="/assets/js/owl.carousel.min.js"></script>
+		<!-- select2 Js -->
+		<script src="/assets/js/select2.min.js"></script>
+		<!-- Magnific Popup-->
+		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+		<!-- Flatpickr JavaScript -->
+		<script src="/assets/js/flatpickr.min.js"></script>
+		<!-- Custom JS-->
+		<script src="/assets/js/custom.js"></script>
+		<!-- rtl -->
+		<script src="/assets/js/rtl.js"></script>
+		<!-- script -->
+		<script src="/assets/js/script.js"></script>
+  		{% block script %}{% endblock %}
+	</body>
 </html>

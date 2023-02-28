@@ -1,5 +1,4 @@
 import quart
-import quart_openapi
 
 from .events import QuartEventBroker
 from . import configs as web_configs
@@ -39,11 +38,4 @@ class QuartApp(quart.Quart, _QuartBaseAppInterface):
 
     def __init__(self, *args, **kwargs):
         quart.Quart.__init__(self, *args, **kwargs)
-        _QuartBaseAppInterface.__init__(self)
-
-
-class PintApp(quart_openapi.Pint, _QuartBaseAppInterface):
-
-    def __init__(self, *args, **kwargs):
-        quart_openapi.Pint.__init__(self, no_openapi=True, *args, **kwargs)
         _QuartBaseAppInterface.__init__(self)

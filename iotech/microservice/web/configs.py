@@ -5,6 +5,7 @@ from ...configurator import Config
 
 
 WEBSERVICE_DB_FILE_DIR = Config(str, "WEBSERVICE", "db_file_dir", None)
+WEBSERVICE_DB_FILE_NAME = Config(str, "WEBSERVICE", "db_file_name", 'repository.db')
 WEBSERVICE_HOST = Config(str, "WEBSERVICE", "host", "0.0.0.0")
 WEBSERVICE_SSL = Config(bool, "WEBSERVICE", "ssl", False)
 WEBSERVICE_SERVER_HOST = Config(str, "WEBSERVICE", "server_host", None)
@@ -18,7 +19,7 @@ def WEBSERVICE_DB_URI() -> str:
     if db_file_dir is None:
         db_uri = Config(str, "WEBSERVICE", "db_uri", None).get()
     else:
-        db_uri = f"sqlite:///{os.path.abspath(os.path.join(db_file_dir, 'repository.db'))}"
+        db_uri = f"sqlite:///{os.path.abspath(os.path.join(db_file_dir, WEBSERVICE_DB_FILE_NAME.get()))}"
     return db_uri
 
 

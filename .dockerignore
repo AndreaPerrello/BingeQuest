@@ -1,0 +1,5 @@
+venv
+.github
+.gitignore
+README.md
+.mycache/

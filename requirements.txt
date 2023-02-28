@@ -24,12 +24,8 @@ pluggy == 1.0.0
 SQLAlchemy == 1.4.36
 flask_sqlalchemy == 2.5.1
 psycopg2-binary==2.9.3;platform_machine != 'armv7l'
-peewee == 3.14.10
 
 # Application
 cryptography == 39.0.1
 cloudscraper == 1.2.68
 beautifulsoup4 == 4.9.3
-aniso8601 == 9.0.1
-PyMovieDb == 0.0.7
-# youtube-search-python == 1.6.6

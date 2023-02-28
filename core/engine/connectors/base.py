@@ -1,56 +1,128 @@
 import abc
-import base64
-import json
 import urllib.parse
-from typing import Optional, List, Any
+import webbrowser
+from typing import Optional, List, Any, Dict
 
-import cryptography.fernet
+from quart import render_template, url_for
 
-from iotech.configurator import Config
+from .. import security
 
-from ..utils import new_tab
-
-FERNET_KEY = Config(str, 'FERNET', 'key')
-key = FERNET_KEY.get().encode('utf-8')
-fernet = cryptography.fernet.Fernet(key)
+_lang_map = {'en': 'ENG', 'it': 'ITA'}
 
 
-class MovieConnector:
+class SearchConnector:
+    children: List = []
 
-    def __init__(self, title: str, url: str, image_relative_url: str):
-        self.title = urllib.parse.unquote(title)
-        self.url = url
-        self.relative_url = image_relative_url
+    def __init__(
+            self,
+            original_title: str,
+            base_title: str = None,
+            details: str = None,
+            url: str = None,
+            image_url: str = None,
+            lang: str = None,
+            year: int = None,
+            *args,
+            **kwargs
+    ):
+        self._original_title = urllib.parse.unquote(original_title)
+        self._base_title: str = base_title
+        self._details: str = details
+        self._url: str = url
+        self._image_url: str = image_url
+        self._lang: str = lang
+        self._year: int = year
+
+    def __lt__(self, other):
+        return self.title < other.title
+
+    def __eq__(self, other):
+        return self.title == other.title
 
     @property
-    def image_url(self) -> str:
+    def title(self) -> str:
+        title = self._original_title
+        if self._year:
+            title = f"{title} [{self._year}]"
+        language = _lang_map.get(self._lang, _lang_map['en'])
+        language_string = f"({language})"
+        if language_string in title:
+            return title
+        return f"{title} {language_string}"
 
-        return f"{self.relative_url}"
+    @property
+    def query_title(self) -> str:
+        return self._original_title.lower()
+
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @classmethod
+    def uid(cls) -> str:
+        return cls.__name__.lower()
+
+    @property
+    def link(self) -> str:
+        return security.url_for('search', m=self.media_hash)
+
+    @property
+    def src(self) -> str:
+        return self._image_url if self._image_url else '/assets/images/blank-poster.jpg'
 
     @classmethod
     def content_from_hash(cls, media_hash: str) -> (Optional[str], Optional[str]):
         try:
-            b64_hash = media_hash.encode('ascii')
-            encrypted_data = base64.urlsafe_b64decode(b64_hash)
-            dumped_data = fernet.decrypt(encrypted_data).decode()
-            data = json.loads(dumped_data)
-            return data['content'], data['type']
+            data = security.decrypt_dict(media_hash)
+            return data['content'], data['uid']
         except:
             return None, None
 
     @property
     def media_hash(self) -> str:
-        dumped_data = json.dumps({'content': self.get_content(), **{'type': self.__class__.__name__}})
-        encrypted_data = fernet.encrypt(dumped_data.encode())
-        b64_hash = base64.urlsafe_b64encode(encrypted_data)
-        return b64_hash.decode('ascii')
+        return security.encrypt_dict(content=self.get_content(), uid=self.uid())
+
+    # Methods
 
     def get_content(self) -> dict:
         return {'url': self.url}
 
     @classmethod
+    async def render_player_deferred(
+            cls, player_poster_url: str = None,
+            player_src_base_url: str = '', mime_type: str = None, ajax_method: str = None, **kwargs):
+        """
+        Render a deferred media-player (video-player with deferred loading function).
+        :param player_poster_url: (optional) URL of the player poster to render after defer loading.
+        :param player_src_base_url: (optional) Base source url to prepend to the deferred result file.
+        :param mime_type: (optional) Mime-type of the deferred resource; default is 'video/mp4'.
+        :param kwargs: (optional) Key-value arguments to pass to the deferred function.
+        """
+        mime_type = mime_type or 'video/mp4'
+        player_poster_url = player_poster_url or '#'
+        player_src_base_url = player_src_base_url or ''
+        if not kwargs.get('error'):
+            kwargs['ajax_url'] = url_for('deferred_execute')
+            kwargs['ajax_method'] = ajax_method or 'post'
+            kwargs['encrypted_ajax_data'] = security.encrypt_dict(u=cls.uid(), **kwargs)
+        return await render_template(
+            'media/player/deferred.html',
+            player_poster=player_poster_url,
+            player_src_base_url=player_src_base_url,
+            mime_type=mime_type, **kwargs)
+
+    @classmethod
+    def new_tab(cls, url):
+        webbrowser.open_new_tab(url)
+        return "<script>history.back()</script>"
+
+    @classmethod
+    async def execute_deferred(cls, **kwargs) -> Optional[Dict]:
+        return dict()
+
+    @classmethod
     async def execute(cls, content: Any) -> Any:
-        return new_tab(content['url'])
+        return cls.new_tab(content['url'])
 
     @classmethod
     @abc.abstractmethod
@@ -65,7 +137,7 @@ class MovieConnector:
 
 class SearchResult:
 
-    def __init__(self, main: List[MovieConnector] = None, secondary: List[MovieConnector] = None):
+    def __init__(self, main: List[SearchConnector] = None, secondary: List[SearchConnector] = None):
         main = main and {x.title: x for x in main} or dict()
         secondary = secondary and {x.title: x for x in secondary} or dict()
         self._reduce(main, secondary)
@@ -74,11 +146,18 @@ class SearchResult:
         self.main = main
         self.secondary = {k: v for k, v in secondary.items() if k not in main}
 
-    def merge(self, x):
+    def merge(self, result):
         """
-        :type x: SearchResult
+        :type result: SearchResult
         """
-        main = {**self.main, **x.main}
-        secondary = {**self.secondary, **x.secondary}
-        self._reduce(main, secondary)
+        if result:
+            main = {**self.main, **result.main}
+            secondary = {**self.secondary, **result.secondary}
+            self._reduce(main, secondary)
 
+    def sorted(self):
+        return self.__class__(sorted(self.main.values()), sorted(self.secondary.values()))
+
+    @property
+    def is_empty(self) -> bool:
+        return not self.main and not self.secondary

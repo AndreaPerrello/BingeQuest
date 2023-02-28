@@ -1,5 +1,4 @@
 import datetime
-import webbrowser
 
 
 def multi_format_date(string: str):
@@ -14,10 +13,13 @@ def multi_format_date(string: str):
             pass
 
 
-def history_back() -> str:
-    return "<script>history.back()</script>"
+def _parse(s: str):
+    return s.lower().replace('-', ' ')
 
 
-def new_tab(url: str) -> str:
-    webbrowser.open_new_tab(url)
-    return history_back()
+def check_in(query: str, title: str) -> bool:
+    return _parse(query) in _parse(title)
+
+
+def check_equal(query: str, title: str) -> bool:
+    return _parse(query) == _parse(title)
