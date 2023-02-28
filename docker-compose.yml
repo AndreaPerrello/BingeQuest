@@ -1,6 +1,12 @@
 version: '3'
 services:
   app:
-    build: ghcr.io/andreaperrello/flickwatch:latest
+    container_name: flickwatch
+    build: .
     ports:
       - "5555:5555"
+#  app:
+#    container_name: flickwatch
+#    build: ghcr.io/andreaperrello/flickwatch:latest
+#    ports:
+#      - "5555:5555"
