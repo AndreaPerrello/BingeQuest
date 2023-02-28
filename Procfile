@@ -1,1 +1,1 @@
-web: hypercorn  web:app -c config/config.toml
+web: python web.py
