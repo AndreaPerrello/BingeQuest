@@ -53,7 +53,7 @@
 name: Docker Build
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: andrea-perrello/binge-quest
+  IMAGE_NAME: ${{ github.repository }}
 on:
   push:
     branches:
