@@ -39,8 +39,8 @@ class SearchEngine:
     def _internal_search(self, q: str, c: SearchConnector):
         try:
             return c.search(q)
-        except:
-            pass
+        except Exception as e:
+            LOGGER.warning(f"{c.uid()}: {e}")
 
     @classmethod
     def _all_connectors(cls, uid: str = None) -> Set[SearchConnector]:
