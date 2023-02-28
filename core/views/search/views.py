@@ -8,7 +8,7 @@ from ...engine import security
 @spec.hookimpl(tryfirst=True)
 def load_blueprints(core):
     def render_template(*args, title_prefix: str = None, **kwargs):
-        title = "FlickWatch"
+        title = "Binge Quest"
         if title_prefix:
             title = f"{title_prefix}{title}"
         request_query = request.args.get('q', '')
