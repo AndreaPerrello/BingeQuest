@@ -3,7 +3,7 @@ import cloudscraper
 import requests
 
 
-def get(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
+def get(url: str, cloud: bool = True, *args, **kwargs) -> requests.Response:
     if cloud:
         cloud_scraper = cloudscraper.create_scraper()
         result = cloud_scraper.get(url, *args, **kwargs)
@@ -12,7 +12,7 @@ def get(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
     return result
 
 
-def post(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
+def post(url: str, cloud: bool = True, *args, **kwargs) -> requests.Response:
     if cloud:
         cloud_scraper = cloudscraper.create_scraper()
         result = cloud_scraper.post(url, *args, **kwargs)
