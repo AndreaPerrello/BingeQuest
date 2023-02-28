@@ -1,6 +1,12 @@
 version: '3'
 services:
   app:
-    build: ghcr.io/andreaperrello/flickwatch:latest
+    container_name: binge_quest
+    build: .
     ports:
       - "5555:5555"
+#  app:
+#    container_name: binge_quest
+#    image: ghcr.io/andreaperrello/binge_quest:latest
+#    ports:
+#      - "5555:5555"
