@@ -2,9 +2,6 @@ import bs4
 import cloudscraper
 import requests
 
-import logging
-LOGGER = logging.getLogger(__name__)
-
 
 def get(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
     if cloud:
@@ -12,7 +9,7 @@ def get(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
         result = cloud_scraper.get(url, *args, **kwargs)
     else:
         result = requests.get(url, *args, verify=False, **kwargs)
-    LOGGER.info(result.text)
+    print(result)
     return result
 
 
@@ -22,7 +19,7 @@ def post(url: str, cloud: bool = False, *args, **kwargs) -> requests.Response:
         result = cloud_scraper.post(url, *args, **kwargs)
     else:
         result = requests.post(url, *args, verify=False, **kwargs)
-    LOGGER.info(result.text)
+    print(result.text)
     return result
 
 
